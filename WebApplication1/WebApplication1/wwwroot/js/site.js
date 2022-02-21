@@ -6,22 +6,25 @@
 
 $(document).ready(function () {
     /*
-    window.addEventListener('pageshow', () => {
-        var flg = window.performance.navigation.type;
-        console.log(flg);
-    });
+ブラウザやキャッシュの状況によって反応が異なるので、以下の２つを併記した方が良い。
+https://qiita.com/tf_okrt/items/0cf72e5fe082cdec6801
     */
 
-    console.log(window.performance.navigation.type);
-
-    if (window.performance.navigation.type == 2) {
-        //遷移後に動かす処理
-        alert('ブラウザバックを検知しました。2');
-    }
-    /*
-    history.replaceState(null, null, null);
-    window.addEventListener('popstate', function (e) {
-        alert('ブラウザバックを検知しました。');
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            // キャッシュから読み込まれた際の挙動
+            alert('event.persisted');
+        }
     });
-    */
+
+    window.addEventListener("pageshow", function (event) {
+        var entries = performance.getEntriesByType("navigation");
+        entries.forEach(function (entry) {
+            if (entry.type == 'back_forward') {
+                // ブラウザの履歴から読み込まれた際の処理
+                alert('back_forward');
+            } 
+        });
+    });
+
 });
